@@ -11,6 +11,8 @@ public class WorkWithFiles {
         try{
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(text);
+            fileWriter.flush();
+            fileWriter.close();
         }catch (IOException ioException){
             System.out.println(ioException.getMessage());
         }
@@ -24,6 +26,8 @@ public class WorkWithFiles {
             while ((c=reader.read())!=-1){
                 text.append((char) c);
             }
+
+            reader.close();
 
         }catch (IOException ioException){
             System.out.println(ioException.getMessage());

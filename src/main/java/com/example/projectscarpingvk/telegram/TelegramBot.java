@@ -9,10 +9,12 @@ import com.example.projectscarpingvk.telegram.dataVK.API;
 import com.example.projectscarpingvk.telegram.helper.PhotoThroughInputStream;
 import com.example.projectscarpingvk.telegram.keyboard.ButtonID;
 import com.example.projectscarpingvk.telegram.keyboard.Keyboard;
+import com.example.projectscarpingvk.tools.WorkWithFiles;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
@@ -63,12 +65,14 @@ public class TelegramBot extends TelegramLongPollingBot {
     private void textButton(CallbackQuery callbackQuery, Keyboard keyboard){
         Long idUser = callbackQuery.getMessage().getChatId();
         String chatId = String.valueOf(idUser);
+        String domain = userTelegramService.getDomain(idUser);
         int messageId = callbackQuery.getMessage().getMessageId();
         ButtonID pressedButton = ButtonID.valueOf(callbackQuery.getData());
 
         switch (pressedButton){
             case START_SCARPING:
                 userTelegramService.changeStatus(Status.INPUT_DOMAIN, idUser);
+                WorkWithFiles.deleteFolder(userTelegramService.getDomain(idUser));
                 sendMessage("Введите адрес пользователя VK", chatId);
                 break;
 
@@ -76,8 +80,23 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendPhotoWithStream(keyboard.drawAbout(chatId, messageId));
                 break;
 
+            case FULL_DATA:
+                sendPhotoWithStream(keyboard.drawFilesMenu(chatId, messageId));
+                break;
+
+            case GET_PHOTO:
+                SendDocument archive = API.getArchiveWithPhoto(userTelegramService.getDomain(idUser), chatId);
+                sendDocument(archive);
+                break;
+
+            case BACK_SHORT:
+                EditMessageMedia media = API.getFromFileUser(domain, chatId, messageId);
+                sendEditPhotoMessage(keyboard.drawInfoUser(media));
+                break;
+
             case BACK:
                 sendPhotoWithStream(keyboard.drawMenu(chatId, messageId));
+                break;
         }
 
     }
@@ -150,6 +169,14 @@ public class TelegramBot extends TelegramLongPollingBot {
     private void sendEditPhotoMessage(EditMessageMedia photo){
         try{
             execute(photo);
+        }catch (TelegramApiException telegramApiException){
+            System.out.println(telegramApiException.getMessage());
+        }
+    }
+
+    private void sendDocument(SendDocument document){
+        try{
+            execute(document);
         }catch (TelegramApiException telegramApiException){
             System.out.println(telegramApiException.getMessage());
         }

@@ -11,9 +11,18 @@ services:
       - dbData:/var/lib/postgres
     ports:
       - "${PORT_DB:-5432}:5432"
+    depends_on:
+      - java
     networks:
       - retmix
 
+  java:
+    build:
+      context: .
+      dockerfile: ./image/Dockerfile
+    networks:
+      - retmix
+    restart: unless-stopped
 
 volumes:
   dbData:

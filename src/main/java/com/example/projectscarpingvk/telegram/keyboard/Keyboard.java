@@ -77,19 +77,31 @@ public class Keyboard {
         return new PhotoThroughInputStream(about, file);
     }
 
-    public EditMessageMedia drawShortInfoUser(String chatId, String domain, int messageId){
-        String pathToUserFolder = "./files/"+domain+"/";
-        InputMediaPhoto photo = new InputMediaPhoto(pathToUserFolder+domain+".jpg");
-        photo.setCaption(WorkWithFiles.readFromFile(new File(pathToUserFolder+domain+".short.text")));
 
-        EditMessageMedia shortInfoUser = new EditMessageMedia();
-        shortInfoUser.setMedia(photo);
-        shortInfoUser.setMessageId(messageId);
-        shortInfoUser.setChatId(chatId);
+    public PhotoThroughInputStream drawFilesMenu(String chatId, int messageId){
+        InputStream file = this.getClass().getResourceAsStream("/photo/files.jpg");
+        InputMediaPhoto photo = new InputMediaPhoto();
+        photo.setMedia(file, "files.jpg");
+        photo.setCaption("Как только вы нажмете какую-либо из кнопок,\n Вам придется подождать, какое-то время,\n пока не завершится загрузка файлов");
+        EditMessageMedia messageMedia = new EditMessageMedia();
+        messageMedia.setChatId(chatId);
+        messageMedia.setMessageId(messageId);
+        messageMedia.setMedia(photo);
 
-        shortInfoUser.setReplyMarkup(markupShortUserInfo());
+        messageMedia.setReplyMarkup(new InlineKeyboardMarkup(
+                createRowsInLine(
+                        createRowInLine(createButton("Архив с фото", ButtonID.GET_PHOTO.value())),
+                        createRowInLine(createButton("Архив с постами", ButtonID.GET_POSTS.value())),
+                        createRowInLine(createButton("<< Назад", ButtonID.BACK_SHORT.value()))
+                )
+        ));
 
-        return shortInfoUser;
+        return new PhotoThroughInputStream(messageMedia, file);
+    }
+
+    public EditMessageMedia drawInfoUser(EditMessageMedia editMessageMedia){
+        editMessageMedia.setReplyMarkup(markupShortUserInfo());
+        return editMessageMedia;
     }
 
     public SendPhoto drawShortInfoUser(SendPhoto sendPhoto){
@@ -114,13 +126,9 @@ public class Keyboard {
 
     //Надо будет потом разделить создание клавы от фото, чтобы не было свалки
     private InlineKeyboardMarkup markupShortUserInfo(){
-        return new InlineKeyboardMarkup(createRowsInLine(createRowInLine(
-                        createButton("Данные", ButtonID.FULL_DATA.value()),
-                        createButton("Характер", ButtonID.CHARACTER_USER.value())),
+        return new InlineKeyboardMarkup(createRowsInLine(
+                createRowInLine(createButton("Файлы", ButtonID.FULL_DATA.value())),
 
-                createRowInLine(
-                        createButton("Архив фото", ButtonID.GET_PHOTO.value()),
-                        createButton("Посты(Не работает)", ButtonID.GET_POSTS.value())),
                 createRowInLine(createButton("Поиск другого человека", ButtonID.START_SCARPING.value()))));
     }
 }

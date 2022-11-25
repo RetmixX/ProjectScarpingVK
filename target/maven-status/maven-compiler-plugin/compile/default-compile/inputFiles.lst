@@ -1,0 +1,17 @@
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/tools/WorkWithFiles.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/models/UserTelegram.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/vk/VK.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/exceptions/UserTelegramNotFound.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/BotInit.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/telegram/keyboard/ButtonID.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/config/AppConfig.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/telegram/TelegramBot.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/models/Status.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/ProjectScarpingVkApplication.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/telegram/dataVK/API.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/service/UserTelegramService.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/telegram/helper/PhotoThroughInputStream.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/telegram/keyboard/Keyboard.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/telegram/processngData/ProcessingData.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/service/impl/UserTelegramServiceImplements.java
+/home/retmix/IdeaProjects/ProjectScarpingVK/src/main/java/com/example/projectscarpingvk/repositories/UserTelegramRepository.java

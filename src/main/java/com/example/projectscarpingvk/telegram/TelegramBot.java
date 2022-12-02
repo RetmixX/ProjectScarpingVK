@@ -1,7 +1,6 @@
 package com.example.projectscarpingvk.telegram;
 
 import com.example.projectscarpingvk.config.AppConfig;
-import com.example.projectscarpingvk.exceptions.UserTelegramNotFound;
 import com.example.projectscarpingvk.models.Status;
 import com.example.projectscarpingvk.models.UserTelegram;
 import com.example.projectscarpingvk.service.UserTelegramService;
@@ -10,7 +9,9 @@ import com.example.projectscarpingvk.telegram.helper.PhotoThroughInputStream;
 import com.example.projectscarpingvk.telegram.keyboard.ButtonID;
 import com.example.projectscarpingvk.telegram.keyboard.Keyboard;
 import com.example.projectscarpingvk.tools.WorkWithFiles;
-import lombok.SneakyThrows;
+import com.vk.api.sdk.exceptions.ApiException;
+import com.vk.api.sdk.exceptions.ClientException;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -66,13 +67,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         Long idUser = callbackQuery.getMessage().getChatId();
         String chatId = String.valueOf(idUser);
         String domain = userTelegramService.getDomain(idUser);
+        String telegramUser = userTelegramService.getUserById(idUser).getId().toString();
         int messageId = callbackQuery.getMessage().getMessageId();
         ButtonID pressedButton = ButtonID.valueOf(callbackQuery.getData());
 
         switch (pressedButton){
             case START_SCARPING:
                 userTelegramService.changeStatus(Status.INPUT_DOMAIN, idUser);
-                WorkWithFiles.deleteFolder(userTelegramService.getDomain(idUser));
+                WorkWithFiles.deleteFolder(chatId,userTelegramService.getDomain(idUser));
                 sendMessage("Введите адрес пользователя VK", chatId);
                 break;
 
@@ -85,12 +87,29 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;
 
             case GET_PHOTO:
-                SendDocument archive = API.getArchiveWithPhoto(userTelegramService.getDomain(idUser), chatId);
-                sendDocument(archive);
+                try {
+                    SendDocument archive = API.getArchiveWithPhoto(telegramUser,userTelegramService.getDomain(idUser), chatId);
+                    sendDocument(archive);
+                }catch (NullPointerException ex){
+                    sendMessage("У данного пользователя нет фотографий или они скрыты", chatId);
+                }
                 break;
 
+            case GET_POST:
+            {
+                try{
+                    SendDocument groupsInfo = API.analyzeUserGroups(telegramUser,userTelegramService.getDomain(idUser), chatId);
+                    sendDocument(groupsInfo);
+                }catch (ClientException | ApiException | NullPointerException exception){
+                    sendMessage("Группы пользователя либо скрыты, либо он не подписан ни на одну группу", chatId);
+                } catch (NotFoundException e) {
+                    sendMessage(e.getMessage(), chatId);
+                }
+                break;
+            }
+
             case BACK_SHORT:
-                EditMessageMedia media = API.getFromFileUser(domain, chatId, messageId);
+                EditMessageMedia media = API.getFromFileUser(domain, chatId, messageId, telegramUser);
                 sendEditPhotoMessage(keyboard.drawInfoUser(media));
                 break;
 
@@ -110,13 +129,17 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         switch (user.getStatus()){
             case INPUT_DOMAIN:
-                SendPhoto shortInfo = API.getShortInfoAboutUser(message, String.valueOf(id));
-                if (shortInfo!=null){
-                    sendPhotoMessage(keyboard.drawShortInfoUser(shortInfo));
-                    userTelegramService.changeDomain(message, id);
-                    userTelegramService.changeStatus(Status.SCARPING, id);
+                try {
+                    SendPhoto shortInfo = API.getShortInfoAboutUser(message, String.valueOf(id), String.valueOf(id));
+                    if (shortInfo!=null){
+                        sendPhotoMessage(keyboard.drawShortInfoUser(shortInfo));
+                        userTelegramService.changeDomain(message, id);
+                        userTelegramService.changeStatus(Status.SCARPING, id);
+                    }
+                    else sendMessage("Пользователь не найден!", chatId);
+                }catch (ClientException | ApiException | NotFoundException ex){
+                    sendMessage(ex.getMessage(), chatId);
                 }
-                else sendMessage("Пользователь не найден!", chatId);
                 break;
         }
     }

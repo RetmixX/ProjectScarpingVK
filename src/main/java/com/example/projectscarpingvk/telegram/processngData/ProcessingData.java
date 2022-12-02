@@ -1,12 +1,16 @@
 package com.example.projectscarpingvk.telegram.processngData;
 
+import com.example.projectscarpingvk.telegram.object.Group;
+import com.example.projectscarpingvk.tools.DownloadPhoto;
 import com.example.projectscarpingvk.tools.WorkWithFiles;
 import com.example.projectscarpingvk.vk.VK;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.vk.api.sdk.objects.users.responses.GetResponse;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
+import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 
@@ -16,32 +20,39 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import static com.example.projectscarpingvk.tools.WorkWithString.definedSex;
+import static com.example.projectscarpingvk.tools.WorkWithString.emptyOrNull;
 
 public class ProcessingData {
-
-    public ProcessingData(){
-        createFolder();
+    private String telegramUser;
+    public ProcessingData(String telegramUser){
+        this.telegramUser = telegramUser;
+        WorkWithFiles.createFolder(telegramUser);
     }
 
     public SendPhoto getShortUserInfo(GetResponse user, String domain){
         SendPhoto shortInfoAboutUser = new SendPhoto();
         InputFile photo = null;
         try{
-            photo = downloadPhoto(user.getPhoto400Orig().toString(), domain);
+            photo = DownloadPhoto.downloadPhoto(user.getPhoto400Orig().toString(), telegramUser ,domain);
         }catch (IOException ioException){
             System.out.println(ioException.getMessage());
         }
         shortInfoAboutUser.setPhoto(photo);
         String text = getInfo(user);
         shortInfoAboutUser.setCaption(text);
-        WorkWithFiles.writeToFile(new File("./files/"+domain+"/"+domain+".txt"), text);
+        WorkWithFiles.writeToFile(new File("./files/"+telegramUser+"/"+domain+"/"+domain+".txt"), text);
 
         return shortInfoAboutUser;
     }
 
     public EditMessageMedia getFromFileUser(String domain){
-        String path = "./files/"+domain+"/";
+        String path = "./files/"+telegramUser+"/"+domain+"/";
         EditMessageMedia user = new EditMessageMedia();
         InputMediaPhoto file = new InputMediaPhoto();
         file.setMedia(new File(path+domain+".jpg"), domain+".jpg");
@@ -50,7 +61,92 @@ public class ProcessingData {
         return user;
     }
 
+    public SendDocument processingGroup(List<Group> groups, String domain){
+        String path = "./files/"+telegramUser+"/"+domain+"/";
+        File txtFile = new File(path+"groups.txt");
 
+        String[] dataAboutUserGroups = orderGroup(groups);
+        WorkWithFiles.writeToFile(txtFile, dataAboutUserGroups[0]);
+
+        SendDocument document = new SendDocument();
+        InputFile inputFile = new InputFile(txtFile);
+
+        document.setDocument(inputFile);
+        document.setCaption(dataAboutUserGroups[1]);
+
+        return document;
+    }
+
+    private String[] orderGroup(List<Group> groups){
+        StringBuilder stringBuilder = new StringBuilder();
+        int countMem = 0;
+        int countArt = 0;
+        int countSport = 0;
+        int countProg = 0;
+
+        for (Group item : groups) {
+            stringBuilder.append("Группа: ").append(item.getTitleGroup()).append("\nДомен: ").append(item.getDomainGroup())
+                    .append("\nКол-во: ")
+                    .append(item.getCountMembers()).append("\n\n");
+            String[] test = String.join(",", item.getTitleGroup().split(" ")).split(",");
+            for (String verb : test) {
+                if (getMemeList().contains(verb.toLowerCase())) {
+                    countMem++;
+                    break;
+                }
+                if (getArtList().contains(verb.toLowerCase())) {
+                    countArt++;
+                    break;
+                }
+
+                if (getSportList().contains(verb.toLowerCase())){
+                    countSport++;
+                    break;
+                }
+
+                if (getProgrammingList().contains(verb.toLowerCase())){
+                    countProg++;
+                    break;
+                }
+            }
+        }
+
+
+        String defineUser = determinationOfInterests(new int[]{countMem, countArt, countSport, countProg});
+        StringBuilder handleGroup = new StringBuilder();
+        handleGroup.append("Мемы: ").append(countMem).append("\nИскусство: ").append(countArt).append("\nСпорт: ")
+                .append(countSport).append("\nПрога: ").append(countProg).append("\n");
+
+        return new String[]{handleGroup.toString()+stringBuilder.toString(), defineUser};
+    }
+
+    private String determinationOfInterests(int[] categories){
+        int max = categories[0];
+        int indexCategory = 0;
+
+        for (int i = 0; i<categories.length; i++)
+            if (categories[i]>max)
+                indexCategory = i;
+
+        if (categories[indexCategory] == 0) indexCategory = -1;
+
+        return defineCategory(indexCategory);
+    }
+
+    private String defineCategory(int indexCategory){
+        switch (indexCategory){
+            case 0:
+                return "Человек часто залипает за мемами";
+            case 1:
+                return "Человек посвящает часто себя искусству";
+            case 2:
+                return "Человек следит за своим телом";
+            case 3:
+                return "Его стиль жизни - программист";
+            default:
+                return "Не могу определить его интересы";
+        }
+    }
 
     private String getInfo(GetResponse user){
         StringBuilder info = new StringBuilder();
@@ -80,73 +176,29 @@ public class ProcessingData {
         return info.toString();
     }
 
-    private InputFile downloadPhoto(String urlStr, String name) throws IOException{
-        BufferedImage image = ImageIO.read(new URL(urlStr));
-
-        File photo = new File(createFolder(name)+"/"+name+".jpg");
-        ImageIO.write(image, "jpg", photo);
-
-        return new InputFile(photo);
+    private List<String> getMemeList(){
+        return Stream.of("мемы", "мем", "мемасы", "мэмы", "memes", "meme", "mem",
+                "pepe", "умора", "мемчики", "мемчиков", "мемная", "мемные", "мемами", "мемах", "мемес", "мемас", "мимас", "мимасики", "мемосы", "мемфоманка",
+                "мемпритон", "меме", "мемафия", "мемов", "приколы", "прикольные", "прикольный", "следим", "следит", "знакомо?",
+                "заслужили", "bullsht", "bullshit", "shit", "evryshit", "обман", "ftp", "орнул", "смехозависимость", "улыбнуло", "кринж.", "переговоры",
+                "переговорный", "переговор", "переговоров", "damn", "энималс", "niggas", "несмешные", "юмор", "юмарески", "юморески", "рофл", "рофлы", "бред", "ирония",
+                "постирония", "lmao", "OfficeGuyPublicMemeStash", "пикчи", "попуг", "абсурд", "videosos", "чудаки", "потрачено", "ладно", "бугурты", "бугуртач", "котизм").toList();
     }
 
-    private void downloadPhotoForArchive(String urlStr, String domain, String name){
-        String path = domain+"/photos";
-        try {
-            URL url = new URL(urlStr);
-            BufferedImage image = ImageIO.read(url);
-            File file = new File(createFolder(path)+"/" + name + ".jpg");
-            ImageIO.write(image, "jpg", file);
-        } catch (IOException ioException) {
-            System.out.println(ioException.getMessage());
-        }
+    private List<String> getArtList(){
+        return Stream.of("арт", "art", "фото", "фотографии", "фотографы", "фотографов", "фильмы", "фильма", "мода", "movie", "movies",
+                "culture", "dream", "minimalism", "istomin", "музыка", "music", "NR.Music", "стиль", "style", "эстетика", "эстетично", "арт-хаус", "кино", "artonce",
+                "primaere", "искусство", "catharsis", "esth?tique", "perfect", "epotage", "стихи", "lumi?re", "ретроскоп", "cinema", "cybermetabolic", "utopia", "photo", "cyber.", "атмосфера",
+                "atmosphere", "любовью", "любовь", "love", "пиксельная", "song", "дизайн", "дизайнер", "design").toList();
     }
 
-    private void createFolder(){
-        File folder = new File("./files");
-
-        if (!folder.exists()) folder.mkdir();
+    private List<String> getSportList(){
+        return Stream.of("спорт", "sport", "здоровье", "тело", "body", "гимнастика", "gymnastic", "футбор", "баскетбол", "плаванье", "качалка", "gym", "качаться", "качаемся", "fitness").toList();
     }
 
-    private File createFolder(String name){
-        File folder = new File("./files/"+name);
-        if (!folder.exists()) folder.mkdir();
-
-        return folder;
+    private List<String> getProgrammingList(){
+        return  Stream.of("программирование", "hash", "programming", "it", "айтишник", "айтишные", "python", "питон", "пайтон", "c++", "си", "c", "go", "java", "джава", "c#",
+                "программистов", "программист", "прогаем", "программиста", "js", "javascript", "html", "css", "html/css", "веб", "машинное", "данные", "данных", "базы", "sql", "dart", "нейронные",
+                "блокчейн", "blockchain", "php", "субд", "code", "код", "hi-tech", "linux", "линус").toList();
     }
-
-    private boolean emptyOrNull(Object object){
-        return object==null || object=="" || object==" ";
-    }
-
-    private String isEmpty(String str){
-        if (emptyOrNull(str)) return "";
-        else return str;
-    }
-
-    private String definedSex(String sex){
-        if (sex.equals("1")) return "Женский";
-        else if (sex.equals("2")) return "Мужской";
-        else return "Не определен";
-    }
-
-    public int downloadPhotoOffset(int userId, int countPhoto, VK vk, String domain) {
-        int iteration = countPhoto / 20 + 1;
-        int countPhotoAlbum = 0;
-        for (int i = 0; i < iteration; i++) {
-            JsonArray items = vk.takePhoto(userId, i);
-            int size = items.size();
-            for (int j = 0; j < size; j++) {
-                countPhotoAlbum++;
-                JsonArray sizePhoto1 = items.get(j).getAsJsonObject().getAsJsonArray("sizes");
-                for (JsonElement element : sizePhoto1) {
-                    if (element.getAsJsonObject().get("type").getAsString().equals("r")) {
-                        downloadPhotoForArchive(element.getAsJsonObject().get("url").getAsString(), domain, "Album_" + countPhotoAlbum);
-                    }
-                }
-            }
-        }
-
-        return countPhoto;
-    }
-
 }

@@ -1,16 +1,13 @@
 package com.example.projectscarpingvk.telegram.keyboard;
 
 import com.example.projectscarpingvk.telegram.helper.PhotoThroughInputStream;
-import com.example.projectscarpingvk.tools.WorkWithFiles;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,7 +88,7 @@ public class Keyboard {
         messageMedia.setReplyMarkup(new InlineKeyboardMarkup(
                 createRowsInLine(
                         createRowInLine(createButton("Архив с фото", ButtonID.GET_PHOTO.value())),
-                        createRowInLine(createButton("Архив с постами", ButtonID.GET_POSTS.value())),
+                        createRowInLine(createButton("Группы", ButtonID.GET_POST.value())),
                         createRowInLine(createButton("<< Назад", ButtonID.BACK_SHORT.value()))
                 )
         ));
@@ -129,6 +126,8 @@ public class Keyboard {
         return new InlineKeyboardMarkup(createRowsInLine(
                 createRowInLine(createButton("Файлы", ButtonID.FULL_DATA.value())),
 
-                createRowInLine(createButton("Поиск другого человека", ButtonID.START_SCARPING.value()))));
+                createRowInLine(createButton("Поиск другого человека", ButtonID.START_SCARPING.value())),
+                createRowInLine(createButton("В меню", ButtonID.BACK.value()))
+                ));
     }
 }

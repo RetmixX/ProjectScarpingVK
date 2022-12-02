@@ -1,4 +1,4 @@
-package com.example.projectscarpingvk.service.telegram.keyboard;
+package com.example.projectscarpingvk.telegram.keyboard;
 
 public enum ButtonID {
     BACK("BACK"),

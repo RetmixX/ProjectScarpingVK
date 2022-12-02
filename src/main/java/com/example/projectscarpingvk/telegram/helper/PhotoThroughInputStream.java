@@ -1,4 +1,4 @@
-package com.example.projectscarpingvk.service.telegram.helper;
+package com.example.projectscarpingvk.telegram.helper;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;

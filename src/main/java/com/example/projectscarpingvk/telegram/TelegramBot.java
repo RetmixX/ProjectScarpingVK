@@ -1,13 +1,13 @@
-package com.example.projectscarpingvk.service.telegram;
+package com.example.projectscarpingvk.telegram;
 
 import com.example.projectscarpingvk.config.AppConfig;
 import com.example.projectscarpingvk.models.Status;
 import com.example.projectscarpingvk.models.UserTelegram;
 import com.example.projectscarpingvk.service.UserTelegramService;
-import com.example.projectscarpingvk.service.telegram.dataVK.API;
-import com.example.projectscarpingvk.service.telegram.helper.PhotoThroughInputStream;
-import com.example.projectscarpingvk.service.telegram.keyboard.ButtonID;
-import com.example.projectscarpingvk.service.telegram.keyboard.Keyboard;
+import com.example.projectscarpingvk.telegram.dataVK.API;
+import com.example.projectscarpingvk.telegram.helper.PhotoThroughInputStream;
+import com.example.projectscarpingvk.telegram.keyboard.ButtonID;
+import com.example.projectscarpingvk.telegram.keyboard.Keyboard;
 import com.example.projectscarpingvk.tools.WorkWithFiles;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
@@ -30,7 +30,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final AppConfig appConfig;
 
     private final UserTelegramService userTelegramService;
-    private final com.example.projectscarpingvk.service.telegram.dataVK.API API;
+    private final com.example.projectscarpingvk.telegram.dataVK.API API;
 
     @Autowired
     public TelegramBot(AppConfig appConfig, UserTelegramService userTelegramService, API API){

@@ -1,6 +1,6 @@
 package com.example.projectscarpingvk;
 
-import com.example.projectscarpingvk.service.telegram.TelegramBot;
+import com.example.projectscarpingvk.telegram.TelegramBot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;

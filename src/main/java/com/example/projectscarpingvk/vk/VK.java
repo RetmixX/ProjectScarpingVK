@@ -1,7 +1,7 @@
 package com.example.projectscarpingvk.vk;
 
 import com.example.projectscarpingvk.config.AppConfig;
-import com.example.projectscarpingvk.service.telegram.object.Group;
+import com.example.projectscarpingvk.telegram.object.Group;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

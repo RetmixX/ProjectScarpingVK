@@ -1,6 +1,6 @@
-package com.example.projectscarpingvk.service.telegram.processngData;
+package com.example.projectscarpingvk.telegram.processngData;
 
-import com.example.projectscarpingvk.service.telegram.object.Group;
+import com.example.projectscarpingvk.telegram.object.Group;
 import com.example.projectscarpingvk.tools.DownloadPhoto;
 import com.example.projectscarpingvk.tools.WorkWithFiles;
 import com.vk.api.sdk.objects.users.responses.GetResponse;

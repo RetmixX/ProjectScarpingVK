@@ -88,7 +88,7 @@ public class Keyboard {
         messageMedia.setReplyMarkup(new InlineKeyboardMarkup(
                 createRowsInLine(
                         createRowInLine(createButton("Архив с фото", ButtonID.GET_PHOTO.value())),
-                        createRowInLine(createButton("Группы", ButtonID.GET_POST.value())),
+                        createRowInLine(createButton("Анализ групп", ButtonID.GET_POST.value())),
                         createRowInLine(createButton("<< Назад", ButtonID.BACK_SHORT.value()))
                 )
         ));
@@ -121,7 +121,6 @@ public class Keyboard {
         return new ArrayList<>(Arrays.asList(rows));
     }
 
-    //Надо будет потом разделить создание клавы от фото, чтобы не было свалки
     private InlineKeyboardMarkup markupShortUserInfo(){
         return new InlineKeyboardMarkup(createRowsInLine(
                 createRowInLine(createButton("Файлы", ButtonID.FULL_DATA.value())),

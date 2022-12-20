@@ -88,8 +88,8 @@ public class VK {
         return new Group(id, titleGroup, domainGroup, countMembers);
     }
     private List<Fields> fieldsUser(){
-        return Stream.of(Fields.CITY, Fields.BDATE, Fields.SCHOOLS, Fields.ABOUT, Fields.BOOKS, Fields.CAREER,
-                Fields.CONNECTIONS, Fields.CONTACTS, Fields.INTERESTS, Fields.MILITARY, Fields.MOVIES, Fields.MUSIC, Fields.OCCUPATION,
+        return Stream.of(Fields.CITY, Fields.BDATE,Fields.ABOUT, Fields.BOOKS, Fields.CAREER,
+                Fields.CONNECTIONS, Fields.CONTACTS, Fields.INTERESTS,Fields.MOVIES, Fields.MUSIC, Fields.OCCUPATION,
                 Fields.PERSONAL, Fields.QUOTES, Fields.RELATIVES, Fields.RELATION, Fields.SEX, Fields.SITE, Fields.UNIVERSITIES, Fields.STATUS,
                 Fields.VERIFIED, Fields.LAST_SEEN, Fields.PHOTO_400_ORIG, Fields.COUNTERS, Fields.ONLINE).toList();
     }

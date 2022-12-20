@@ -3,6 +3,7 @@ package com.example.projectscarpingvk.telegram.processngData;
 import com.example.projectscarpingvk.telegram.object.Group;
 import com.example.projectscarpingvk.tools.DownloadPhoto;
 import com.example.projectscarpingvk.tools.WorkWithFiles;
+import com.example.projectscarpingvk.tools.WorkWithString;
 import com.vk.api.sdk.objects.users.responses.GetResponse;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -151,10 +152,18 @@ public class ProcessingData {
         String city ="Город: " + (!emptyOrNull(user.getCity()) ? user.getCity().getTitle(): "none");
         String status = "Статус: "+ (!emptyOrNull(user.getStatus()) ? user.getStatus() : "none");
         String site = "Сайт: " +(!emptyOrNull(user.getSite()) ? user.getSite() : "none");
+        String platform = "Платформа: "+(!emptyOrNull(user.getLastSeen())? WorkWithString.definePlatform(user.getLastSeen().getPlatform()) : "none");
+        String lastEnter = "none";
+        if (user.getOnline()!=null){
+            if (user.getOnline().getValue().equals("0")){
+                lastEnter = "Последний вход: "+(!emptyOrNull(user.getLastSeen())? WorkWithString.convertUNIXToDateString(user.getLastSeen().getTime().longValue()):"none");
+            }
+            else lastEnter = "Пользователь сейчас онлайн";
+        }
         int countFriend = !emptyOrNull(user.getCounters().getFriends()) ? user.getCounters().getFriends() : 0;
         int countGroups = !emptyOrNull(user.getCounters().getPages())? user.getCounters().getPages(): 0;
 
-        List<String> fields = Arrays.asList(name, lastname, sex, birthday, city, status, site);
+        List<String> fields = Arrays.asList(name, lastname, sex, birthday, city, status, site, platform, lastEnter);
 
         for (var item: fields)
             if (!item.endsWith("none"))

@@ -49,16 +49,17 @@ public class TelegramBot extends TelegramLongPollingBot {
         return appConfig.getToken();
     }
 
+    //Срабатывает на все события пользователя
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage()){
+        if (update.hasMessage()){//Для введенного текста
             String message = update.getMessage().getText();
             if (message.startsWith("/"))
                 textCommands(message, update);
 
             else processingSendChatText(update);
 
-        } else if (update.hasCallbackQuery()) {
+        } else if (update.hasCallbackQuery()) { //Для обработки нажатия кнопок
             textButton(update.getCallbackQuery(), new Keyboard());
         }
     }
@@ -161,15 +162,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     private void sendPhotoWithStream(PhotoThroughInputStream photo){
         sendEditPhotoMessage(photo.getEditMessageMedia());
         photo.closeStream();
-    }
-
-    private void sendTextMessage(SendMessage message, String text){
-        message.setText(text);
-        try{
-            execute(message);
-        }catch (TelegramApiException exception){
-            System.out.println(exception.getMessage());
-        }
     }
 
     private void sendMessage(String message, String chatId){

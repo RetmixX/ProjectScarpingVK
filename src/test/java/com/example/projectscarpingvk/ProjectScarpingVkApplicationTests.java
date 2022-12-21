@@ -48,6 +48,15 @@ class ProjectScarpingVkApplicationTests {
     }
 
     @Test
+    public void testGetGroup(){
+        int idOpenGroup = 598222987;
+        int idClosedGroup = 7846830;
+
+        Assertions.assertDoesNotThrow(()->vk.getGroupsUser(idOpenGroup));
+        Assertions.assertThrows(Exception.class, ()->vk.getGroupsUser(idClosedGroup));
+    }
+
+    @Test
     public void testCreateFolder() {
         Assertions.assertInstanceOf(File.class, WorkWithFiles.createFolder("test", "test_name"));
     }
@@ -70,6 +79,13 @@ class ProjectScarpingVkApplicationTests {
 
         Assertions.assertEquals("Женский", WorkWithString.definedSex(female));
         Assertions.assertEquals("Мужской", WorkWithString.definedSex(male));
+    }
+
+    @Test
+    public void testConvertToUnixTime(){
+        long unix = 1671631410;
+        String validDate = "21:03 || 21 декабря 2022";
+        Assertions.assertEquals(validDate, WorkWithString.convertUNIXToDateString(unix));
     }
 
 

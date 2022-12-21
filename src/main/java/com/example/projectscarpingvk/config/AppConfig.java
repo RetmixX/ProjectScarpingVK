@@ -21,5 +21,4 @@ public class AppConfig {
 
     @Value("${vk.app}")
     private String idApp;
-
 }

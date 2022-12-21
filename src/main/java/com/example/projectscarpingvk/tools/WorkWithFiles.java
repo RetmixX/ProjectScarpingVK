@@ -99,7 +99,7 @@ public class WorkWithFiles {
 
     public static File createFolder(String telegramUser, String name){
         File folder = new File("./files/"+telegramUser+"/"+name);
-        if (!folder.exists()) folder.mkdir();
+        folder.mkdir();
 
         return folder;
     }

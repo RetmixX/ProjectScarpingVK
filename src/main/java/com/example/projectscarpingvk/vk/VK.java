@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 
 @Service
 public class VK {
-
     private AppConfig appConfig;
 
     private UserActor userActor;
